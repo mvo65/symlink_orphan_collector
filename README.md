@@ -1,0 +1,26 @@
+# symlink_orphan_collector
+
+Finds and optionally removes symlinks whose targets no longer exist, walking a directory tree without following symlinked directories.
+
+```python
+from symlink_orphan_collector import collect_orphaned_symlinks, is_orphaned_symlink
+
+for orphan in collect_orphaned_symlinks("/var/data/migrated"):
+    print(orphan)
+
+# To unlink each orphan as it is found:
+removed = list(collect_orphaned_symlinks("/var/data/migrated", remove=True))
+
+# Check a single path:
+is_orphaned_symlink("/var/data/migrated/old_link")
+```
+
+## Why this exists
+
+After a migration or cleanup pass, symlinks that pointed at now-deleted files linger indefinitely. This library walks a tree, identifies links whose targets are unreachable, and can remove them in one pass.
+
+The trade-off: "orphan" is defined as the link resolving to nothing right now. We do not track whether a target existed in the past. If a link points through another link to a missing file, it is orphaned; if its immediate target exists, it is not. One rule, no ambiguity.
+
+## Edge case to know about
+
+The scan does not descend into symlinked directories (`followlinks=False`). This prevents infinite loops on cyclic link graphs and bounds the scan to the real directory tree. A symlink to a missing directory is reported as an orphan like any other broken link.
