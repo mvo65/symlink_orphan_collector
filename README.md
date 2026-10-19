@@ -24,3 +24,10 @@ The trade-off: "orphan" is defined as the link resolving to nothing right now. W
 ## Edge case to know about
 
 The scan does not descend into symlinked directories (`followlinks=False`). This prevents infinite loops on cyclic link graphs and bounds the scan to the real directory tree. A symlink to a missing directory is reported as an orphan like any other broken link.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
