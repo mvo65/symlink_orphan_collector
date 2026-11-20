@@ -1,6 +1,6 @@
 [project]
 name = "symlink-orphan-collector"
-version = "0.1.1"
+version = "0.1.2"
 description = "Scans a directory tree for broken symlinks and can optionally delete them."
 requires-python = ">=3.10"
 dependencies = []
